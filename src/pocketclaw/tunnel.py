@@ -19,6 +19,10 @@ class TunnelManager:
         self.public_url: Optional[str] = None
         self._shutdown_event = asyncio.Event()
 
+    def is_installed(self) -> bool:
+        """Check if cloudflared is installed."""
+        return shutil.which("cloudflared") is not None
+
     async def install(self) -> bool:
         """Attempt to install cloudflared via Homebrew."""
         if self.is_installed():
