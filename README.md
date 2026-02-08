@@ -5,7 +5,7 @@
 <h1 align="center">PocketPaw</h1>
 
 <p align="center">
-  <strong>Your AI agent that lives on YOUR Computer, Mobile, works on your goals autonomously.</strong>
+  <strong>Your AI agent. Modular. Secure. Everywhere.</strong>
 </p>
 
 <p align="center">
@@ -16,7 +16,8 @@
 </p>
 
 <p align="center">
-  Self-hosted, multi-agent AI platform. Talk through <strong>Telegram</strong>, work happens on your machine.<br>
+  Self-hosted AI agent. Telegram + Web Dashboard. Encrypted credentials.<br>
+  Three LLM backends. Persistent memory. 30-second install.<br>
   No subscription. No cloud lock-in. Just you and your Paw.
 </p>
 
@@ -29,6 +30,8 @@ pip install pocketpaw && pocketpaw
 ```
 
 **That's it.** One command. 30 seconds. Your own AI agent.
+
+<p align="center"><img src="demo.gif" alt="PocketPaw — install to first Telegram message in 30 seconds" width="600"></p>
 
 <details>
 <summary>More install options</summary>
@@ -49,7 +52,11 @@ uv run pocketpaw
 </details>
 
 PocketPaw will open your browser, walk you through Telegram bot setup, and be ready to go.
+Scan the QR code to take your Paw mobile via Cloudflare tunnel.
 No Docker. No config files. No YAML. No dependency hell.
+
+**Talk to your agent from anywhere:**
+Telegram · Discord · Slack · WhatsApp · Web Dashboard
 
 ---
 
@@ -239,24 +246,21 @@ Then set `MEMORY_BACKEND=mem0` in your environment. Mem0 gives you semantic sear
 
 ## Configuration
 
-Config lives in `~/.pocketclaw/config.json`:
+Config lives in `~/.pocketclaw/config.json`. API keys and tokens are **automatically encrypted** in `secrets.enc` — never stored as plain text.
 
 ```json
 {
-  "telegram_bot_token": "your-bot-token",
-  "allowed_user_id": 123456789,
   "agent_backend": "claude_agent_sdk",
   "llm_provider": "anthropic",
-  "anthropic_api_key": "sk-ant-...",
-  "memory_backend": "file"
+  "memory_backend": "file",
+  "allowed_user_id": 123456789
 }
 ```
 
-Or use environment variables with the `POCKETCLAW_` prefix:
+Sensitive fields (API keys, bot tokens) are managed through the web dashboard or environment variables — PocketPaw encrypts them on first load:
 
 ```bash
 export POCKETCLAW_ANTHROPIC_API_KEY="sk-ant-..."
-export POCKETCLAW_AGENT_BACKEND="claude_agent_sdk"
 export POCKETCLAW_LLM_PROVIDER="ollama"
 ```
 
@@ -331,8 +335,6 @@ uv run pocketpaw --web --port 8888
 
 ## Roadmap
 
-See [Feature Audit vs OpenClaw](docs/FEATURE_AUDIT_VS_OPENCLAW.md) for a detailed gap analysis.
-
 **Next up:**
 - [ ] Web search tool (Brave/Tavily)
 - [ ] Self-generating skills via conversation
@@ -345,6 +347,9 @@ See [Feature Audit vs OpenClaw](docs/FEATURE_AUDIT_VS_OPENCLAW.md) for a detaile
 ---
 
 ## Join the Pack
+
+<!-- TODO: Add Product Hunt badge once page is live -->
+<!-- [![Product Hunt](https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=XXXXX)](https://www.producthunt.com/posts/pocketpaw) -->
 
 - Twitter: [@PocketPawAI](https://twitter.com/PocketPaw89242)
 - Discord: Coming Soon
