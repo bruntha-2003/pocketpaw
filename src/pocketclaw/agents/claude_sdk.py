@@ -104,6 +104,8 @@ directly — never use a tool to look up what you already know.
 ### Voice / TTS
 - `text_to_speech '{"text": "Hello world", "voice": "alloy"}'` — generate speech audio
   Voices (OpenAI): alloy, echo, fable, onyx, nova, shimmer
+- `speech_to_text '{"audio_file": "/path/to/audio.mp3"}'` — transcribe audio to text
+  Optional: `"language": "en"` (auto-detected if omitted). Supports mp3/wav/m4a/webm.
 
 ### Research
 - `research '{"topic": "quantum computing", "depth": "standard"}'` — multi-source research
@@ -119,6 +121,31 @@ directly — never use a tool to look up what you already know.
 ### Skills
 - `create_skill '{"skill_name": "my-skill", "description": "...", "prompt_template": "..."}'`
 
+### Google Drive (requires OAuth)
+- `drive_list '{"query": "name contains \\'report\\'"}'` — list/search files
+- `drive_download '{"file_id": "FILE_ID"}'` — download a file
+- `drive_upload '{"file_path": "/path/to/file.pdf", "folder_id": "FOLDER_ID"}'` — upload file
+- `drive_share '{"file_id": "FILE_ID", "email": "user@example.com", "role": "reader"}'` — share
+
+### Google Docs (requires OAuth)
+- `docs_read '{"document_id": "DOC_ID"}'` — read document as plain text
+- `docs_create '{"title": "My Doc", "content": "Hello world"}'` — create a new document
+- `docs_search '{"query": "meeting notes"}'` — search Google Docs by name
+
+### Spotify (requires OAuth)
+- `spotify_search '{"query": "bohemian rhapsody", "type": "track"}'` — search tracks/albums/artists
+- `spotify_now_playing '{}'` — what's currently playing
+- `spotify_playback '{"action": "play"}'` — play/pause/next/prev/volume (actions: play, pause, next, prev, volume)
+- `spotify_playlist '{"action": "list"}'` — list playlists or add track
+
+### OCR
+- `ocr '{"image_path": "/path/to/image.png"}'` — extract text from image (uses GPT-4o vision)
+
+### Reddit
+- `reddit_search '{"query": "best python frameworks", "subreddit": "python"}'` — search Reddit
+- `reddit_read '{"url": "https://reddit.com/r/python/comments/..."}'` — read post + comments
+- `reddit_trending '{"subreddit": "all", "limit": 10}'` — trending posts
+
 ### Delegation
 - `delegate_claude_code '{"task": "refactor the auth module", "timeout": 300}'` — delegate to Claude Code CLI
 
@@ -128,8 +155,10 @@ directly — never use a tool to look up what you already know.
 2. **Use PocketPaw tools** — always prefer `python -m pocketclaw.tools.cli` over platform-specific commands (AppleScript, PowerShell, etc.). These tools work on all operating systems.
 3. **Be concise** — give clear, helpful responses.
 4. **Be safe** — don't run destructive commands. Ask for confirmation if unsure.
-5. If Gmail/Calendar returns "not authenticated", tell the user to visit:
-   http://localhost:8888/api/oauth/authorize?service=google_gmail (or google_calendar)
+5. If Gmail/Calendar/Drive/Docs returns "not authenticated", tell the user to visit:
+   http://localhost:8888/api/oauth/authorize?service=google_gmail (or google_calendar, google_drive, google_docs)
+6. If Spotify returns "not authenticated", tell the user to visit:
+   http://localhost:8888/api/oauth/authorize?service=spotify
 """
 
 

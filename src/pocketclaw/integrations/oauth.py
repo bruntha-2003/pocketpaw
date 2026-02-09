@@ -22,6 +22,11 @@ PROVIDERS: dict[str, dict[str, str]] = {
         "token_url": "https://oauth2.googleapis.com/token",
         "revoke_url": "https://oauth2.googleapis.com/revoke",
     },
+    "spotify": {
+        "auth_url": "https://accounts.spotify.com/authorize",
+        "token_url": "https://accounts.spotify.com/api/token",
+        "revoke_url": "",
+    },
 }
 
 

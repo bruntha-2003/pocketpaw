@@ -80,6 +80,7 @@ function app() {
             modelTierComplex: 'claude-opus-4-6',
             ttsProvider: 'openai',
             ttsVoice: 'alloy',
+            sttModel: 'whisper-1',
             selfAuditEnabled: true,
             selfAuditSchedule: '0 3 * * *',
             memoryBackend: 'file',
@@ -101,7 +102,9 @@ function app() {
             parallel: '',
             elevenlabs: '',
             google_oauth_id: '',
-            google_oauth_secret: ''
+            google_oauth_secret: '',
+            spotify_client_id: '',
+            spotify_client_secret: ''
         },
         hasAnthropicKey: false,
         hasOpenaiKey: false,
@@ -111,6 +114,8 @@ function app() {
         hasElevenlabsKey: false,
         hasGoogleOAuthId: false,
         hasGoogleOAuthSecret: false,
+        hasSpotifyClientId: false,
+        hasSpotifyClientSecret: false,
 
         // Spread feature states
         ...featureStates,
@@ -314,6 +319,9 @@ function app() {
                 if (serverSettings.ttsVoice !== undefined) {
                     this.settings.ttsVoice = serverSettings.ttsVoice;
                 }
+                if (serverSettings.sttModel) {
+                    this.settings.sttModel = serverSettings.sttModel;
+                }
                 if (serverSettings.selfAuditEnabled !== undefined) {
                     this.settings.selfAuditEnabled = serverSettings.selfAuditEnabled;
                 }
@@ -353,6 +361,8 @@ function app() {
                 this.hasElevenlabsKey = serverSettings.hasElevenlabsKey || false;
                 this.hasGoogleOAuthId = serverSettings.hasGoogleOAuthId || false;
                 this.hasGoogleOAuthSecret = serverSettings.hasGoogleOAuthSecret || false;
+                this.hasSpotifyClientId = serverSettings.hasSpotifyClientId || false;
+                this.hasSpotifyClientSecret = serverSettings.hasSpotifyClientSecret || false;
 
                 // Log agent status if available (for debugging)
                 if (serverSettings.agentStatus) {
@@ -438,7 +448,9 @@ function app() {
                 'parallel': 'hasParallelKey',
                 'elevenlabs': 'hasElevenlabsKey',
                 'google_oauth_id': 'hasGoogleOAuthId',
-                'google_oauth_secret': 'hasGoogleOAuthSecret'
+                'google_oauth_secret': 'hasGoogleOAuthSecret',
+                'spotify_client_id': 'hasSpotifyClientId',
+                'spotify_client_secret': 'hasSpotifyClientSecret'
             };
             if (keyMap[provider]) {
                 this[keyMap[provider]] = true;

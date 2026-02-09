@@ -252,6 +252,13 @@ class Settings(BaseSettings):
     tts_voice: str = Field(
         default="alloy", description="TTS voice name (OpenAI: alloy/echo/fable/onyx/nova/shimmer)"
     )
+    stt_model: str = Field(default="whisper-1", description="OpenAI Whisper model for STT")
+
+    # Spotify
+    spotify_client_id: str | None = Field(default=None, description="Spotify OAuth client ID")
+    spotify_client_secret: str | None = Field(
+        default=None, description="Spotify OAuth client secret"
+    )
 
     # Signal
     signal_api_url: str = Field(
@@ -418,6 +425,14 @@ class Settings(BaseSettings):
             "tts_provider": self.tts_provider,
             "elevenlabs_api_key": (self.elevenlabs_api_key or existing.get("elevenlabs_api_key")),
             "tts_voice": self.tts_voice,
+            "stt_model": self.stt_model,
+            # Spotify
+            "spotify_client_id": (
+                self.spotify_client_id or existing.get("spotify_client_id")
+            ),
+            "spotify_client_secret": (
+                self.spotify_client_secret or existing.get("spotify_client_secret")
+            ),
             # Signal
             "signal_api_url": self.signal_api_url,
             "signal_phone_number": self.signal_phone_number,

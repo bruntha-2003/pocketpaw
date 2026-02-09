@@ -943,34 +943,61 @@ _OAUTH_SCOPES: dict[str, list[str]] = {
     "google_calendar": [
         "https://www.googleapis.com/auth/calendar",
     ],
+    "google_drive": [
+        "https://www.googleapis.com/auth/drive",
+    ],
+    "google_docs": [
+        "https://www.googleapis.com/auth/documents",
+        "https://www.googleapis.com/auth/drive.readonly",
+    ],
+    "spotify": [
+        "user-read-playback-state",
+        "user-modify-playback-state",
+        "user-read-currently-playing",
+        "playlist-read-private",
+        "playlist-modify-public",
+        "playlist-modify-private",
+    ],
 }
 
 
 @app.get("/api/oauth/authorize")
 async def oauth_authorize(service: str = Query("google_gmail")):
-    """Start OAuth flow — redirects user to Google's consent screen."""
+    """Start OAuth flow — redirects user to provider consent screen."""
     from fastapi.responses import RedirectResponse
 
     settings = Settings.load()
-    client_id = settings.google_oauth_client_id
-    if not client_id:
-        raise HTTPException(
-            status_code=400,
-            detail="Google OAuth Client ID not configured. Set it in Settings first.",
-        )
 
     scopes = _OAUTH_SCOPES.get(service)
     if not scopes:
         raise HTTPException(status_code=400, detail=f"Unknown service: {service}")
 
+    # Determine provider and credentials from service name
+    if service == "spotify":
+        provider = "spotify"
+        client_id = settings.spotify_client_id
+        if not client_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Spotify Client ID not configured. Set it in Settings first.",
+            )
+    else:
+        provider = "google"
+        client_id = settings.google_oauth_client_id
+        if not client_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Google OAuth Client ID not configured. Set it in Settings first.",
+            )
+
     from pocketclaw.integrations.oauth import OAuthManager
 
     manager = OAuthManager()
     redirect_uri = f"http://localhost:{settings.web_port}/oauth/callback"
-    state = f"google:{service}"
+    state = f"{provider}:{service}"
 
     auth_url = manager.get_auth_url(
-        provider="google",
+        provider=provider,
         client_id=client_id,
         redirect_uri=redirect_uri,
         scopes=scopes,
@@ -1010,12 +1037,20 @@ async def oauth_callback(
 
         scopes = _OAUTH_SCOPES.get(service, [])
 
+        # Resolve credentials per provider
+        if provider == "spotify":
+            client_id = settings.spotify_client_id or ""
+            client_secret = settings.spotify_client_secret or ""
+        else:
+            client_id = settings.google_oauth_client_id or ""
+            client_secret = settings.google_oauth_client_secret or ""
+
         await manager.exchange_code(
             provider=provider,
             service=service,
             code=code,
-            client_id=settings.google_oauth_client_id or "",
-            client_secret=settings.google_oauth_client_secret or "",
+            client_id=client_id,
+            client_secret=client_secret,
             redirect_uri=redirect_uri,
             scopes=scopes,
         )
@@ -1476,6 +1511,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str | None = Query(Non
                     settings.tts_provider = data["tts_provider"]
                 if "tts_voice" in data:
                     settings.tts_voice = data["tts_voice"]
+                if data.get("stt_model"):
+                    settings.stt_model = data["stt_model"]
                 if "self_audit_enabled" in data:
                     settings.self_audit_enabled = bool(data["self_audit_enabled"])
                 if data.get("self_audit_schedule"):
@@ -1573,6 +1610,21 @@ async def websocket_endpoint(websocket: WebSocket, token: str | None = Query(Non
                             "content": "✅ Google OAuth Client Secret saved!",
                         }
                     )
+                elif provider == "spotify_client_id" and key:
+                    settings.spotify_client_id = key
+                    settings.save()
+                    await websocket.send_json(
+                        {"type": "message", "content": "✅ Spotify Client ID saved!"}
+                    )
+                elif provider == "spotify_client_secret" and key:
+                    settings.spotify_client_secret = key
+                    settings.save()
+                    await websocket.send_json(
+                        {
+                            "type": "message",
+                            "content": "✅ Spotify Client Secret saved!",
+                        }
+                    )
                 else:
                     await websocket.send_json(
                         {"type": "error", "content": "Invalid API key or provider"}
@@ -1614,6 +1666,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str | None = Query(Non
                             "modelTierComplex": settings.model_tier_complex,
                             "ttsProvider": settings.tts_provider,
                             "ttsVoice": settings.tts_voice,
+                            "sttModel": settings.stt_model,
                             "selfAuditEnabled": settings.self_audit_enabled,
                             "selfAuditSchedule": settings.self_audit_schedule,
                             "memoryBackend": settings.memory_backend,
@@ -1627,6 +1680,8 @@ async def websocket_endpoint(websocket: WebSocket, token: str | None = Query(Non
                             "hasElevenlabsKey": bool(settings.elevenlabs_api_key),
                             "hasGoogleOAuthId": bool(settings.google_oauth_client_id),
                             "hasGoogleOAuthSecret": bool(settings.google_oauth_client_secret),
+                            "hasSpotifyClientId": bool(settings.spotify_client_id),
+                            "hasSpotifyClientSecret": bool(settings.spotify_client_secret),
                             "agentActive": agent_active,
                             "agentStatus": agent_status,
                         },

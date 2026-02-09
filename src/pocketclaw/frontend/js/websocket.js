@@ -191,6 +191,7 @@ class PocketPawSocket {
             model_tier_complex: settings.modelTierComplex,
             tts_provider: settings.ttsProvider,
             tts_voice: settings.ttsVoice,
+            stt_model: settings.sttModel,
             self_audit_enabled: settings.selfAuditEnabled,
             self_audit_schedule: settings.selfAuditSchedule,
             memory_backend: settings.memoryBackend,

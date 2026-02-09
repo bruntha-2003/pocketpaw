@@ -28,13 +28,22 @@ TOOL_GROUPS: dict[str, list[str]] = {
     "group:memory": ["remember", "recall", "forget"],
     "group:desktop": ["desktop"],
     "group:search": ["web_search", "url_extract"],
-    "group:media": ["image_generate"],
     "group:skills": ["create_skill"],
     "group:gmail": ["gmail_search", "gmail_read", "gmail_send"],
     "group:calendar": ["calendar_list", "calendar_create", "calendar_prep"],
-    "group:voice": ["text_to_speech"],
+    "group:voice": ["text_to_speech", "speech_to_text"],
     "group:research": ["research"],
     "group:delegation": ["delegate_claude_code"],
+    "group:drive": ["drive_list", "drive_download", "drive_upload", "drive_share"],
+    "group:docs": ["docs_read", "docs_create", "docs_search"],
+    "group:spotify": [
+        "spotify_search",
+        "spotify_now_playing",
+        "spotify_playback",
+        "spotify_playlist",
+    ],
+    "group:media": ["image_generate", "ocr"],
+    "group:reddit": ["reddit_search", "reddit_read", "reddit_trending"],
     "group:mcp": [],  # Placeholder — MCP tools are dynamic per server
 }
 

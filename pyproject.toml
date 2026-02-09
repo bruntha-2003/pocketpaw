@@ -96,6 +96,9 @@ extract = [
 voice = [
     "elevenlabs>=1.0.0",
 ]
+ocr = [
+    "pytesseract>=0.3.10",
+]
 mcp = [
     "mcp>=1.0.0",
 ]
@@ -114,7 +117,7 @@ channels = [
     "pocketpaw[discord,slack]",
 ]
 all = [
-    "pocketpaw[memory,channels,whatsapp-personal,image,extract,voice,mcp]",
+    "pocketpaw[memory,channels,whatsapp-personal,image,extract,voice,ocr,mcp]",
 ]
 
 [project.scripts]

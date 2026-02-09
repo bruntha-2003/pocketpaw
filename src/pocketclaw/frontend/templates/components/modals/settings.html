@@ -542,6 +542,19 @@ x-transition.opacity
         <small class="text-white/40 text-xs">OpenAI: alloy/echo/fable/onyx/nova/shimmer</small>
     </div>
 
+    <!-- STT Model -->
+    <div class="flex flex-col gap-2">
+        <label class="text-[13px] font-medium text-[var(--text-secondary)]">STT Model</label>
+        <input
+            type="text"
+            x-model="settings.sttModel"
+            @change="saveSettings()"
+            placeholder="whisper-1"
+            class="w-full bg-black/30 border border-[var(--glass-border)] rounded-[10px] py-2.5 px-3.5 text-[14px] text-white focus:outline-none focus:border-[var(--accent-color)] focus:bg-black/40 transition-all placeholder-white/20"
+        />
+        <small class="text-white/40 text-xs">OpenAI Whisper model for speech-to-text transcription</small>
+    </div>
+
     <!-- ElevenLabs API Key -->
     <div class="flex flex-col gap-2">
         <div class="flex justify-between items-center">
@@ -611,6 +624,84 @@ x-transition.opacity
         >
         Save
         </button>
+        </div>
+    </div>
+
+    <!-- Google OAuth Authorize Buttons -->
+    <div class="flex flex-col gap-2" x-show="hasGoogleOAuthId && hasGoogleOAuthSecret">
+        <label class="text-[13px] font-medium text-[var(--text-secondary)]">Google Services</label>
+        <small class="text-white/40 text-xs">Authorize access to Google services (opens in a new tab)</small>
+        <div class="flex flex-wrap gap-2">
+            <a href="/oauth/authorize/gmail" target="_blank" class="inline-flex items-center gap-1.5 bg-black/30 border border-[var(--glass-border)] hover:border-[var(--accent-color)] text-white/80 hover:text-white px-3 py-2 rounded-[8px] text-[13px] transition-all">
+                <i data-lucide="mail" class="w-3.5 h-3.5"></i> Gmail
+            </a>
+            <a href="/oauth/authorize/google_calendar" target="_blank" class="inline-flex items-center gap-1.5 bg-black/30 border border-[var(--glass-border)] hover:border-[var(--accent-color)] text-white/80 hover:text-white px-3 py-2 rounded-[8px] text-[13px] transition-all">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Calendar
+            </a>
+            <a href="/oauth/authorize/google_drive" target="_blank" class="inline-flex items-center gap-1.5 bg-black/30 border border-[var(--glass-border)] hover:border-[var(--accent-color)] text-white/80 hover:text-white px-3 py-2 rounded-[8px] text-[13px] transition-all">
+                <i data-lucide="hard-drive" class="w-3.5 h-3.5"></i> Drive
+            </a>
+            <a href="/oauth/authorize/google_docs" target="_blank" class="inline-flex items-center gap-1.5 bg-black/30 border border-[var(--glass-border)] hover:border-[var(--accent-color)] text-white/80 hover:text-white px-3 py-2 rounded-[8px] text-[13px] transition-all">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Docs
+            </a>
+        </div>
+    </div>
+
+    <!-- Spotify Client ID -->
+    <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center">
+            <label class="text-[13px] font-medium text-[var(--text-secondary)]">Spotify Client ID</label>
+            <span x-show="hasSpotifyClientId" class="text-xs font-medium text-[var(--success-color)] flex items-center gap-1">
+                <i data-lucide="check" class="w-3 h-3"></i> Saved
+            </span>
+        </div>
+        <div class="flex gap-2">
+        <input
+            type="password"
+            x-model="apiKeys.spotify_client_id"
+            :placeholder="hasSpotifyClientId ? '••••••••••••••••' : 'spotify-client-id...'"
+            class="flex-1 bg-black/30 border border-[var(--glass-border)] rounded-[10px] py-2.5 px-3.5 text-[14px] text-white focus:outline-none focus:border-[var(--accent-color)] focus:bg-black/40 transition-all placeholder-white/20"
+        />
+        <button
+            class="bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-white px-4 py-2 rounded-[8px] text-[13px] font-semibold transition-all active:scale-95"
+            @click="saveApiKey('spotify_client_id')"
+        >
+        Save
+        </button>
+        </div>
+    </div>
+
+    <!-- Spotify Client Secret -->
+    <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center">
+            <label class="text-[13px] font-medium text-[var(--text-secondary)]">Spotify Client Secret</label>
+            <span x-show="hasSpotifyClientSecret" class="text-xs font-medium text-[var(--success-color)] flex items-center gap-1">
+                <i data-lucide="check" class="w-3 h-3"></i> Saved
+            </span>
+        </div>
+        <div class="flex gap-2">
+        <input
+            type="password"
+            x-model="apiKeys.spotify_client_secret"
+            :placeholder="hasSpotifyClientSecret ? '••••••••••••••••' : 'spotify-client-secret...'"
+            class="flex-1 bg-black/30 border border-[var(--glass-border)] rounded-[10px] py-2.5 px-3.5 text-[14px] text-white focus:outline-none focus:border-[var(--accent-color)] focus:bg-black/40 transition-all placeholder-white/20"
+        />
+        <button
+            class="bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] text-white px-4 py-2 rounded-[8px] text-[13px] font-semibold transition-all active:scale-95"
+            @click="saveApiKey('spotify_client_secret')"
+        >
+        Save
+        </button>
+        </div>
+    </div>
+
+    <!-- Spotify OAuth Authorize Button -->
+    <div class="flex flex-col gap-2" x-show="hasSpotifyClientId && hasSpotifyClientSecret">
+        <label class="text-[13px] font-medium text-[var(--text-secondary)]">Spotify Authorization</label>
+        <div class="flex flex-wrap gap-2">
+            <a href="/oauth/authorize/spotify" target="_blank" class="inline-flex items-center gap-1.5 bg-[#1DB954]/20 border border-[#1DB954]/40 hover:border-[#1DB954] text-[#1DB954] hover:text-white px-3 py-2 rounded-[8px] text-[13px] transition-all">
+                <i data-lucide="music" class="w-3.5 h-3.5"></i> Authorize Spotify
+            </a>
         </div>
     </div>
 
