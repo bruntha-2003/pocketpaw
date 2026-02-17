@@ -2,15 +2,10 @@
  * PocketPaw - Mission Control Feature Module
  *
  * Created: 2026-02-05
- * Updated: 2026-02-12 — Added createProjectTask() for adding tasks to a project.
- *   Enhanced Deep Work task table with:
- *   - Execution levels (phase grouping by dependency order)
- *   - Expandable task rows with inline deliverable preview
- *   - Skip task functionality
- *   - List/timeline view toggle
- *   - Blocker/blocks name resolution helpers
- *   - Task readiness checking for inline run buttons
- *   - handleMCEvent mc_task_completed updates projectTasks
+ * Updated: 2026-02-16 — Added Output Files panel state and methods:
+ *   projectOutputFiles, projectOutputLoading, _outputExpanded,
+ *   loadProjectOutputFiles(), handleOutputFiles(), openOutputFile().
+ *   Auto-loads output files on selectProject().
  *
  * Contains all Crew (Mission Control) related state and methods:
  * - Agent CRUD operations
@@ -21,6 +16,7 @@
  * - Deep Work project orchestration
  * - Comments/Thread
  * - Deliverables
+ * - Output Files panel
  */
 
 window.PocketPaw = window.PocketPaw || {};
@@ -84,6 +80,11 @@ window.PocketPaw.MissionControl = {
                 expandedTaskId: null,          // which task row is expanded
                 taskViewMode: 'list',          // 'list' | 'timeline'
                 taskDeliverableCache: {},      // {task_id: [documents...]} for inline preview
+
+                // Output Files panel state
+                projectOutputFiles: [],        // files in project output directory
+                projectOutputLoading: false,   // loading state for output files
+                _outputExpanded: true,         // output panel starts expanded
             }
         };
     },
@@ -1227,6 +1228,8 @@ window.PocketPaw.MissionControl = {
                 this.missionControl.taskLevelMap = {};
                 this.missionControl.expandedTaskId = null;
                 this.missionControl.taskDeliverableCache = {};
+                this.missionControl.projectOutputFiles = [];
+                this.missionControl.projectOutputLoading = false;
 
                 try {
                     const res = await fetch(`/api/deep-work/projects/${project.id}/plan`);
@@ -1245,6 +1248,9 @@ window.PocketPaw.MissionControl = {
                         if (idx >= 0) {
                             this.missionControl.projects[idx] = data.project;
                         }
+
+                        // Load output files for the project
+                        this.loadProjectOutputFiles();
                     }
                 } catch (e) {
                     console.error('Failed to load project detail:', e);
@@ -1367,6 +1373,54 @@ window.PocketPaw.MissionControl = {
                 } catch (e) {
                     console.error('Failed to delete project:', e);
                     this.showToast('Failed to delete project', 'error');
+                }
+            },
+
+            // ==================== Output Files ====================
+
+            /**
+             * Load output files for the selected project via WebSocket browse command.
+             * Uses 'output_' context prefix so file-browser.js routes the response here.
+             */
+            loadProjectOutputFiles() {
+                const project = this.missionControl.selectedProject;
+                if (!project || !project.folder_path) return;
+                this.missionControl.projectOutputFiles = [];
+                this.missionControl.projectOutputLoading = true;
+                socket.send('browse', { path: project.folder_path, context: 'output_' + project.id });
+            },
+
+            /**
+             * Handle browse response routed from file-browser.js for output_ context.
+             */
+            handleOutputFiles(data) {
+                this.missionControl.projectOutputFiles = data.files || [];
+                this.missionControl.projectOutputLoading = false;
+                this.$nextTick(() => { if (window.refreshIcons) window.refreshIcons(); });
+            },
+
+            /**
+             * Open an output file or directory. Directories open in the file browser modal.
+             */
+            openOutputFile(file) {
+                const project = this.missionControl.selectedProject;
+                if (!project || !project.folder_path) return;
+                const fullPath = project.folder_path + '/' + file.name;
+                if (file.isDir) {
+                    this.fileLoading = true;
+                    this.fileError = null;
+                    this.files = [];
+                    this.filePath = fullPath;
+                    socket.send('browse', { path: fullPath });
+                    this.showFileBrowser = true;
+                } else {
+                    // Open file browser at parent dir so user can see the file in context
+                    this.fileLoading = true;
+                    this.fileError = null;
+                    this.files = [];
+                    this.filePath = project.folder_path;
+                    socket.send('browse', { path: project.folder_path });
+                    this.showFileBrowser = true;
                 }
             },
 

@@ -2,8 +2,8 @@
  * PocketPaw - File Browser Feature Module
  *
  * Created: 2026-02-05
- * Updated: 2026-02-12 — handleFiles routes sidebar_* context responses to
- *   ProjectBrowser.handleSidebarFiles() instead of updating modal state.
+ * Updated: 2026-02-16 — handleFiles routes output_* context responses to
+ *   handleOutputFiles() for the Deep Work project Output Files panel.
  *
  * Contains file browser modal functionality:
  * - Directory navigation
@@ -40,6 +40,11 @@ window.PocketPaw.FileBrowser = {
                 // Route sidebar file tree responses to ProjectBrowser
                 if (data.context && data.context.startsWith('sidebar_')) {
                     this.handleSidebarFiles(data);
+                    return;
+                }
+                // Route output file responses to Deep Work Output Files panel
+                if (data.context && data.context.startsWith('output_')) {
+                    this.handleOutputFiles(data);
                     return;
                 }
 
