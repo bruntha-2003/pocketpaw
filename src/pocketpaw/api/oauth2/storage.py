@@ -20,7 +20,7 @@ DEFAULT_DESKTOP_CLIENT = OAuthClient(
     client_id="pocketpaw-desktop",
     client_name="PocketPaw Desktop",
     redirect_uris=["tauri://oauth-callback", "http://localhost:1420/oauth-callback"],
-    allowed_scopes=["chat", "sessions", "settings:read", "settings:write", "channels", "memory"],
+    allowed_scopes=["chat", "sessions", "settings:read", "settings:write", "channels", "memory", "admin"],
 )
 
 
