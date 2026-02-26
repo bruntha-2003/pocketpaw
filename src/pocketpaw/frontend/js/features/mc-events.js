@@ -24,6 +24,10 @@ window.PocketPaw.McEvents = {
                 loading: false,
                 stats: { total_agents: 0, active_tasks: 0, completed_today: 0, total_documents: 0 },
                 activities: [],
+                agents: [],
+                tasks: [],
+                projects: [],
+                runningTasks: {},
             }
         };
     },
